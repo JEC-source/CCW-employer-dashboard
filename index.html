@@ -66,8 +66,8 @@ body{font-family:'Nunito Sans',sans-serif;background:var(--mist);color:var(--tex
 /* FILTER */
 .filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
 .f-lbl{font-size:11px;font-weight:700;color:var(--slate);text-transform:uppercase;letter-spacing:.07em}
-select#countyFilter{font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;border:1.5px solid var(--line);border-radius:999px;padding:6px 30px 6px 13px;color:var(--navy);background:white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234a6b77' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;-webkit-appearance:none;outline:none;cursor:pointer;transition:border-color .15s}
-select#countyFilter:focus{border-color:var(--teal)}
+select#countyFilter,select#statusFilter{font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;border:1.5px solid var(--line);border-radius:999px;padding:6px 30px 6px 13px;color:var(--navy);background:white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234a6b77' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;-webkit-appearance:none;outline:none;cursor:pointer;transition:border-color .15s}
+select#countyFilter:focus,select#statusFilter:focus{border-color:var(--teal)}
 .res-ct{font-size:11px;font-weight:700;background:var(--teal-lt);color:var(--teal-dk);padding:5px 12px;border-radius:999px}
  
 /* TIMELINE */
@@ -153,7 +153,7 @@ footer a{color:var(--teal);text-decoration:none}
   <div class="hero-text">
     <h1>Employer Engagement in Child Care Works</h1>
     <p>Tracking outreach, pre-enrollment conversations, and enrollment progress for employers across Missouri.</p>
-    <div class="updated-badge"><span class="upd-dot"></span>Last updated: April 29, 2026</div>
+    <div class="updated-badge"><span class="upd-dot"></span>Last updated: May 3, 2026</div>
   </div>
 </div>
  
@@ -182,6 +182,13 @@ footer a{color:var(--teal);text-decoration:none}
   <div class="filter-bar">
     <span class="f-lbl">Filter by Region</span>
     <select id="countyFilter"></select>
+    <span class="f-lbl" style="margin-left:8px">Status</span>
+    <select id="statusFilter">
+      <option value="All">All Statuses</option>
+      <option value="enr">In Enrollment Process</option>
+      <option value="eng">Actively Engaged</option>
+      <option value="out">Initial Outreach</option>
+    </select>
     <span class="res-ct" id="resCt"></span>
   </div>
  
@@ -221,6 +228,7 @@ const REGION_COUNTIES = {
   "Texas County":     ["Texas"],
   "West Central":     ["Polk","Cedar","St. Clair","Henry"],
   "St. Charles County":["St. Charles"],
+  "Cape Girardeau County":["Cape Girardeau"],
 };
  
 // ── MILESTONE LABELS ──
@@ -228,89 +236,118 @@ const MS_SHORT = ["Initial Outreach","Follow-up Requested","Expressed Interest",
 const MS_LONG  = ["Initial outreach complete","Follow-up requested","Expressed interest in moving forward","Actively engaged in pre-enrollment","Started enrollment process","Employer agreement signed","Employee enrollment open","Benefits started"];
 const MS_GROUP = [0,0,0,1,2,2,2,2];
  
-// ── DATA (synced from spreadsheet April 29, 2026) ──
+// ── DATA (synced from spreadsheet May 3, 2026) ──
 const DATA = [
-  {r:"Jasper County",          n:"Schreiber Foods",                           m:[1,1,1,1,1,1,1,1]},
-  {r:"Phelps County",          n:"1st Presbyterian Preschool",                m:[1,1,1,1,1,0,0,0]},
-  {r:"Phelps County",          n:"Phelps County Bank",                        m:[1,1,1,1,1,1,1,1]},
-  {r:"Phelps County",          n:"Kaleidoscope Discovery Center",             m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"All God's Children",                        m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"Choices for People",                        m:[1,1,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"Four Rivers",                               m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"Mi Serenity",                               m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"Aurora Health and Rehab",                   m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"Rolla Presbyterian Manor",                  m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"Oak Point",                                 m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"Cedar Point",                               m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"Grellner",                                  m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"Cohen",                                     m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"City of Rolla",                             m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"FSCB",                                      m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"Southern Bank",                             m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"Riverways Credit Union",                    m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"Hartmann",                                  m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"Brewer Science",                            m:[1,0,0,0,0,0,0,0]},
-  {r:"Phelps County",          n:"Price Chopper",                             m:[1,0,0,0,0,0,0,0]},
-  {r:"Greene County",          n:"SRC",                                       m:[1,1,1,1,1,0,0,0]},
-  {r:"Greene County",          n:"Northside Childcare Center",                m:[1,1,1,1,1,0,0,0]},
-  {r:"Greene County",          n:"Amprod",                                    m:[1,1,1,1,0,0,0,0]},
-  {r:"Greene County",          n:"City of Springfield",                       m:[1,1,1,1,0,0,0,0]},
-  {r:"Cole County",            n:"Mid-Mo TeleCom",                            m:[1,1,1,1,1,1,1,1]},
-  {r:"Cole County",            n:"Apple Tree Academy",                        m:[1,1,1,1,1,1,1,1]},
-  {r:"Cole County",            n:"Courtyard Academy",                         m:[1,1,1,1,1,1,1,1]},
-  {r:"Cole County",            n:"Learning Connection",                       m:[1,1,1,1,1,1,1,1]},
-  {r:"Cole County",            n:"YMCA - Jefferson City",                     m:[1,1,1,1,1,1,1,1]},
-  {r:"Cole County",            n:"Unilever - JC",                             m:[1,1,1,1,1,1,1,1]},
-  {r:"Cole County",            n:"A Place to Grow",                           m:[1,1,1,1,1,1,1,1]},
-  {r:"Cole County",            n:"Modine Manufacturing",                      m:[1,1,1,1,1,0,0,0]},
-  {r:"Cole County",            n:"Osage Industries, Inc.",                    m:[1,1,1,1,1,1,1,1]},
-  {r:"Cole County",            n:"All In One Landscaping",                    m:[1,1,1,1,0,0,0,0]},
-  {r:"Cole County",            n:"City of Jefferson",                         m:[1,1,1,1,0,0,0,0]},
-  {r:"Cole County",            n:"Quaker Windows",                            m:[1,1,1,1,0,0,0,0]},
-  {r:"St. Louis",              n:"South Side",                                m:[1,0,0,0,0,0,0,0]},
-  {r:"St. Louis",              n:"New City",                                  m:[1,0,0,0,0,0,0,0]},
-  {r:"St. Louis",              n:"Mary Margaret",                             m:[1,1,1,1,1,0,0,0]},
-  {r:"St. Louis",              n:"Urban Sprouts",                             m:[1,1,1,1,1,0,0,0]},
-  {r:"St. Charles County",     n:"Etrailer",                                  m:[1,1,1,1,1,1,0,0]},
-  {r:"KC Region",              n:"Della Lamb Early Childhood Center",         m:[1,1,1,1,1,1,1,0]},
-  {r:"KC Region",              n:"City of Grandview",                         m:[1,1,1,1,1,1,1,1]},
-  {r:"KC Region",              n:"Independence School District",              m:[1,1,0,0,0,0,0,0]},
-  {r:"KC Region",              n:"Westport Law Offices",                      m:[1,1,1,1,1,0,0,0]},
-  {r:"Boone County",           n:"17 Employers (unnamed)",                    m:[1,0,0,0,0,0,0,0]},
-  {r:"Perry County",           n:"TG Missouri",                               m:[1,0,0,0,0,0,0,0]},
-  {r:"Perry County",           n:"Gilster-Mary Lee",                          m:[1,0,0,0,0,0,0,0]},
-  {r:"Perry County",           n:"Mercy Hospital",                            m:[1,0,0,0,0,0,0,0]},
-  {r:"St. Francois County",    n:"First State Community Bank",                m:[1,1,1,0,0,0,0,0]},
-  {r:"St. Francois County",    n:"Parkland Hospital",                         m:[1,1,1,0,0,0,0,0]},
-  {r:"St. Francois County",    n:"US Tool",                                   m:[1,1,1,0,0,0,0,0]},
-  {r:"Stone & Taney Counties", n:"CoxHealth",                                 m:[1,1,1,0,0,0,0,0]},
-  {r:"Stone & Taney Counties", n:"Silver Dollar City",                        m:[1,1,1,0,0,0,0,0]},
-  {r:"Stone & Taney Counties", n:"Schools + YMCA",                            m:[1,1,1,0,0,0,0,0]},
-  {r:"Stone & Taney Counties", n:"Branson Public Schools",                    m:[1,1,1,0,0,0,0,0]},
-  {r:"Stone & Taney Counties", n:"Getting Floored",                           m:[1,1,1,0,0,0,0,0]},
-  {r:"Texas County",           n:"Durham Company",                            m:[1,0,0,0,0,0,0,0]},
-  {r:"Texas County",           n:"L&R Industries",                            m:[1,0,0,0,0,0,0,0]},
-  {r:"Texas County",           n:"Western Dairy",                             m:[1,0,0,0,0,0,0,0]},
-  {r:"West Central",           n:"Supermarket",                               m:[1,1,1,0,0,0,0,0]},
-  {r:"West Central",           n:"Clinton Healthcare Rehab",                  m:[1,0,0,0,0,0,0,0]},
-  {r:"West Central",           n:"Mills & Sons Insurance",                    m:[1,1,1,0,0,0,0,0]},
-  {r:"West Central",           n:"Southwest Electric Cooperative",            m:[1,1,1,0,0,0,0,0]},
-  {r:"West Central",           n:"Phoenix Decor",                             m:[1,0,0,0,0,0,0,0]},
-  {r:"West Central",           n:"Bolivar R-1 School District",               m:[1,1,1,0,0,0,0,0]},
-  {r:"West Central",           n:"Citizens Memorial Hospital",                m:[1,1,1,0,0,0,0,0]},
-  {r:"West Central",           n:"Notcho Ordinary Taco",                      m:[1,1,1,0,0,0,0,0]},
-  {r:"West Central",           n:"Parks Cabinets",                            m:[1,1,1,0,0,0,0,0]},
-  {r:"West Central",           n:"Seeds of Faith Preschool",                  m:[1,1,1,0,0,0,0,0]},
-  {r:"West Central",           n:"Golden Valley Daycare",                     m:[1,0,0,0,0,0,0,0]},
-  {r:"West Central",           n:"Hawthorn Bank",                             m:[1,0,0,0,0,0,0,0]},
-  {r:"West Central",           n:"Oak Star Bank",                             m:[1,1,1,0,0,0,0,0]},
-  {r:"West Central",           n:"Golden Valley Memorial Healthcare",         m:[1,0,0,0,0,0,0,0]},
-  {r:"West Central",           n:"Schreiber Foods",                           m:[1,1,1,0,0,0,0,0]},
-  {r:"West Central",           n:"Little Liberators",                         m:[1,0,0,0,0,0,0,0]},
-  {r:"West Central",           n:"Precision Aero Services",                   m:[1,0,0,0,0,0,0,0]},
-  {r:"West Central",           n:"Arrowhead Industries",                      m:[1,0,0,0,0,0,0,0]},
-  {r:"West Central",           n:"White River Marine / Tracker Boats",        m:[1,0,0,0,0,0,0,0]},
-  {r:"West Central",           n:"Southwest Baptist University",              m:[1,0,0,0,0,0,0,0]},
+  {r:"Jasper County",           n:"Schreiber Foods",                        m:[1,1,1,1,1,1,1,1]},
+  {r:"Phelps County",           n:"1st Presbyterian Preschool",             m:[1,1,1,1,1,0,0,0]},
+  {r:"Phelps County",           n:"Phelps County Bank",                     m:[1,1,1,1,1,1,1,1]},
+  {r:"Phelps County",           n:"Kaleidoscope Discovery Center",          m:[1,0,0,0,0,0,0,0]},
+  {r:"Phelps County",           n:"All God's Children",                     m:[1,1,1,0,0,0,0,0]},
+  {r:"Phelps County",           n:"Choices for People",                     m:[1,1,1,0,0,0,0,0]},
+  {r:"Phelps County",           n:"Four Rivers",                            m:[1,0,0,0,0,0,0,0]},
+  {r:"Phelps County",           n:"Mi Serenity",                            m:[1,0,0,0,0,0,0,0]},
+  {r:"Phelps County",           n:"Aurora Health and Rehab",                m:[1,0,0,0,0,0,0,0]},
+  {r:"Phelps County",           n:"Rolla Presbyterian Manor",               m:[1,0,0,0,0,0,0,0]},
+  {r:"Phelps County",           n:"Oak Point",                              m:[1,0,0,0,0,0,0,0]},
+  {r:"Phelps County",           n:"Cedar Point",                            m:[1,0,0,0,0,0,0,0]},
+  {r:"Phelps County",           n:"Grellner",                               m:[1,0,0,0,0,0,0,0]},
+  {r:"Phelps County",           n:"Cohen",                                  m:[1,0,0,0,0,0,0,0]},
+  {r:"Phelps County",           n:"City of Rolla",                          m:[1,0,0,0,0,0,0,0]},
+  {r:"Phelps County",           n:"FSCB",                                   m:[1,0,0,0,0,0,0,0]},
+  {r:"Phelps County",           n:"Southern Bank",                          m:[1,0,0,0,0,0,0,0]},
+  {r:"Phelps County",           n:"Riverways Credit Union",                 m:[1,1,1,0,0,0,0,0]},
+  {r:"Phelps County",           n:"Hartmann",                               m:[1,1,1,0,0,0,0,0]},
+  {r:"Phelps County",           n:"Brewer Science",                         m:[1,0,0,0,0,0,0,0]},
+  {r:"Phelps County",           n:"Price Chopper",                          m:[1,0,0,0,0,0,0,0]},
+  {r:"Phelps County",           n:"MO Sci",                                 m:[1,0,0,0,0,0,0,0]},
+  {r:"Cape Girardeau County",   n:"Johns Pharmacy",                         m:[1,1,1,1,1,0,0,0]},
+  {r:"Greene County",           n:"SRC",                                    m:[1,1,1,1,1,0,0,0]},
+  {r:"Greene County",           n:"Northside Childcare Center",             m:[1,1,1,1,1,0,0,0]},
+  {r:"Greene County",           n:"Amprod",                                 m:[1,1,1,1,0,0,0,0]},
+  {r:"Greene County",           n:"City of Springfield",                    m:[1,1,1,1,0,0,0,0]},
+  {r:"Cole County",             n:"Mid-Mo TeleCom",                         m:[1,1,1,1,1,1,1,1]},
+  {r:"Cole County",             n:"Apple Tree Academy",                     m:[1,1,1,1,1,1,1,1]},
+  {r:"Cole County",             n:"Courtyard Academy",                      m:[1,1,1,1,1,1,1,1]},
+  {r:"Cole County",             n:"Learning Connection",                    m:[1,1,1,1,1,1,1,1]},
+  {r:"Cole County",             n:"YMCA - Jefferson City",                  m:[1,1,1,1,1,1,1,1]},
+  {r:"Cole County",             n:"Unilever - JC",                          m:[1,1,1,1,1,1,1,1]},
+  {r:"Cole County",             n:"A Place to Grow",                        m:[1,1,1,1,1,1,1,1]},
+  {r:"Cole County",             n:"Modine Manufacturing",                   m:[1,1,1,1,1,0,0,0]},
+  {r:"Cole County",             n:"Osage Industries, Inc.",                 m:[1,1,1,1,1,1,1,1]},
+  {r:"Cole County",             n:"All In One Landscaping",                 m:[1,1,1,1,0,0,0,0]},
+  {r:"Cole County",             n:"Cole County",                            m:[1,1,1,1,0,0,0,0]},
+  {r:"Cole County",             n:"City of Jefferson",                      m:[1,1,1,1,0,0,0,0]},
+  {r:"Cole County",             n:"Quaker Windows",                         m:[1,1,1,1,0,0,0,0]},
+  {r:"St. Louis",               n:"South Side",                             m:[1,0,0,0,0,0,0,0]},
+  {r:"St. Louis",               n:"New City",                               m:[1,0,0,0,0,0,0,0]},
+  {r:"St. Louis",               n:"Mary Margaret",                          m:[1,1,1,1,1,0,0,0]},
+  {r:"St. Louis",               n:"Urban Sprouts",                          m:[1,1,1,1,1,0,0,0]},
+  {r:"St. Charles County",      n:"Etrailer",                               m:[1,1,1,1,1,1,0,0]},
+  {r:"KC Region",               n:"Della Lamb Early Childhood Center",      m:[1,1,1,1,1,1,1,1]},
+  {r:"KC Region",               n:"City of Grandview",                      m:[1,1,1,1,1,1,1,1]},
+  {r:"KC Region",               n:"Independence School District",           m:[1,1,0,0,0,0,0,0]},
+  {r:"KC Region",               n:"Westport Law Offices",                   m:[1,1,1,1,1,0,0,0]},
+  {r:"Boone County",            n:"Stephens College",                       m:[1,1,1,0,0,0,0,0]},
+  {r:"Boone County",            n:"Columbia EDP",                           m:[1,1,1,0,0,0,0,0]},
+  {r:"Boone County",            n:"Cherry Hill Dental",                     m:[1,1,0,0,0,0,0,0]},
+  {r:"Boone County",            n:"LiUNA Local 955",                        m:[1,1,0,0,0,0,0,0]},
+  {r:"Boone County",            n:"Precious Moments Daycare",               m:[1,1,0,0,0,0,0,0]},
+  {r:"Boone County",            n:"MU Health Care",                         m:[1,1,1,0,0,0,0,0]},
+  {r:"Boone County",            n:"Shelter Insurance",                      m:[1,1,0,0,0,0,0,0]},
+  {r:"Boone County",            n:"Boone Health",                           m:[1,1,0,0,0,0,0,0]},
+  {r:"Boone County",            n:"MEM",                                    m:[1,1,0,0,0,0,0,0]},
+  {r:"Boone County",            n:"Veterans United",                        m:[1,1,0,0,0,0,0,0]},
+  {r:"Boone County",            n:"Columbia Insurance",                     m:[1,1,0,0,0,0,0,0]},
+  {r:"Boone County",            n:"EquipmentShare",                         m:[1,1,0,0,0,0,0,0]},
+  {r:"Boone County",            n:"Columbia Public Schools",                m:[1,1,0,0,0,0,0,0]},
+  {r:"Boone County",            n:"City of Columbia",                       m:[1,1,0,0,0,0,0,0]},
+  {r:"Boone County",            n:"Paytient",                               m:[1,1,0,0,0,0,0,0]},
+  {r:"Boone County",            n:"Boone County",                           m:[1,1,0,0,0,0,0,0]},
+  {r:"Perry County",            n:"TG Missouri",                            m:[1,1,1,0,0,0,0,0]},
+  {r:"Perry County",            n:"Gilster-Mary Lee",                       m:[1,1,1,0,0,0,0,0]},
+  {r:"Perry County",            n:"Mercy Hospital",                         m:[1,1,1,0,0,0,0,0]},
+  {r:"St. Francois County",     n:"First State Community Bank",             m:[1,1,1,0,0,0,0,0]},
+  {r:"St. Francois County",     n:"Parkland Hospital (BJC)",                m:[1,1,1,0,0,0,0,0]},
+  {r:"St. Francois County",     n:"US Tool",                                m:[1,1,1,0,0,0,0,0]},
+  {r:"St. Francois County",     n:"Griffin Automotive",                     m:[1,1,1,0,0,0,0,0]},
+  {r:"Stone & Taney Counties",  n:"CoxHealth",                              m:[1,1,1,0,0,0,0,0]},
+  {r:"Stone & Taney Counties",  n:"Silver Dollar City",                     m:[1,1,1,0,0,0,0,0]},
+  {r:"Stone & Taney Counties",  n:"Schools + YMCA",                         m:[1,1,1,1,0,0,0,0]},
+  {r:"Stone & Taney Counties",  n:"Branson Public Schools",                 m:[1,1,1,1,0,0,0,0]},
+  {r:"Stone & Taney Counties",  n:"Getting Floored",                        m:[1,1,1,0,0,0,0,0]},
+  {r:"Stone & Taney Counties",  n:"Bass Pro Hospitality",                   m:[1,1,1,0,0,0,0,0]},
+  {r:"Stone & Taney Counties",  n:"Chateau on the Lake",                    m:[1,1,1,0,0,0,0,0]},
+  {r:"Stone & Taney Counties",  n:"Grand Country",                          m:[1,1,1,0,0,0,0,0]},
+  {r:"Stone & Taney Counties",  n:"ADM",                                    m:[1,1,1,0,0,0,0,0]},
+  {r:"Stone & Taney Counties",  n:"Sight & Sound",                          m:[1,1,1,0,0,0,0,0]},
+  {r:"Stone & Taney Counties",  n:"City of Branson",                        m:[1,1,1,0,0,0,0,0]},
+  {r:"Stone & Taney Counties",  n:"Branson Chamber / TCP",                  m:[1,1,1,0,0,0,0,0]},
+  {r:"Stone & Taney Counties",  n:"Branson Bank",                           m:[1,1,1,0,0,0,0,0]},
+  {r:"Texas County",            n:"Durham Company",                         m:[1,1,1,0,0,0,0,0]},
+  {r:"Texas County",            n:"L&R Industries",                         m:[1,1,1,0,0,0,0,0]},
+  {r:"Texas County",            n:"Western Dairy",                          m:[1,1,1,0,0,0,0,0]},
+  {r:"Texas County",            n:"Amick Construction",                     m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"Woods Supermarket",                      m:[1,1,0,0,0,0,0,0]},
+  {r:"West Central",            n:"Clinton Healthcare Rehab",               m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"Mills & Sons Insurance",                 m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"Southwest Electric Cooperative",         m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"Phoenix Decor",                          m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"Bolivar R-1 School District",            m:[1,0,0,0,0,0,0,0]},
+  {r:"West Central",            n:"Citizens Memorial Hospital",             m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"Notcho Ordinary Taco",                   m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"Parks Cabinets",                         m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"Seeds of Faith Preschool",               m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"Golden Valley Daycare",                  m:[1,0,0,0,0,0,0,0]},
+  {r:"West Central",            n:"Hawthorn Bank",                          m:[1,0,0,0,0,0,0,0]},
+  {r:"West Central",            n:"Oak Star Bank",                          m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"Golden Valley Memorial Healthcare",      m:[1,0,0,0,0,0,0,0]},
+  {r:"West Central",            n:"Schreiber Foods",                        m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"Little Liberators",                      m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"Precision Aero Services",                m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"Arrowhead Industries",                   m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"White River Marine / Tracker Boats",     m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"Southwest Baptist University",           m:[1,1,1,0,0,0,0,0]},
+  {r:"West Central",            n:"WCMCAA / New Growth",                    m:[1,1,1,0,0,0,0,0]},
 ];
  
 // ── HELPERS ──
@@ -349,16 +386,18 @@ function renderMsHeader(){
 }
  
 // ── TABLE ──
-function renderTable(filter){
-  const list=filter==='All'?DATA:DATA.filter(e=>e.r===filter);
+function renderTable(regionFilter, statusFilter){
+  statusFilter = statusFilter || 'All';
+  let list = regionFilter === 'All' ? DATA : DATA.filter(e=>e.r===regionFilter);
+  if(statusFilter !== 'All') list = list.filter(e=>phase(e)===statusFilter);
+ 
   document.getElementById('resCt').textContent=`${list.length} employer${list.length!==1?'s':''}`;
   const grouped={};
   list.forEach(e=>{if(!grouped[e.r])grouped[e.r]=[];grouped[e.r].push(e);});
-  // Sort region groups alphabetically
   const sortedRegions = Object.keys(grouped).sort((a,b)=>a.localeCompare(b));
   let html='';
   sortedRegions.forEach(region=>{
-    if(filter==='All')html+=`<div class="grp-hd">${region}</div>`;
+    if(regionFilter==='All')html+=`<div class="grp-hd">${region}</div>`;
     grouped[region].forEach(emp=>{
       const dots=emp.m.map((v,i)=>{
         const g=MS_GROUP[i];
@@ -368,14 +407,18 @@ function renderTable(filter){
       html+=`<div class="emp-row"><div class="emp-name" title="${emp.n}">${emp.n}</div><div class="ms-track">${dots}</div></div>`;
     });
   });
-  document.getElementById('trackerBody').innerHTML=html||`<div class="empty-state">No employers for this region.</div>`;
+  if(!html) html=`<div class="empty-state">No employers match the selected filters.</div>`;
+  document.getElementById('trackerBody').innerHTML=html;
   document.getElementById('etScroll').scrollTop=0;
 }
  
-function setFilter(region){
-  document.getElementById('countyFilter').value=region;
-  const list=region==='All'?DATA:DATA.filter(e=>e.r===region);
-  renderStats(list);renderTable(region);colorMap(region);
+function setFilter(region, status){
+  if(region !== undefined) document.getElementById('countyFilter').value=region;
+  if(status !== undefined) document.getElementById('statusFilter').value=status;
+  const r=document.getElementById('countyFilter').value;
+  const s=document.getElementById('statusFilter').value;
+  const list=r==='All'?DATA:DATA.filter(e=>e.r===r);
+  renderStats(list);renderTable(r,s);colorMap(r);
   document.querySelector('.employer-table').scrollIntoView({behavior:'smooth',block:'start'});
 }
  
@@ -455,6 +498,7 @@ const REGION_LABELS = {
   "Texas County":           {text:["Texas"]},
   "West Central":           {text:["West","Central"]},
   "St. Charles County":     {text:["St. Charles"]},
+  "Cape Girardeau County":  {text:["Cape","Girardeau"]},
 };
  
 function renderLabels(filter){
@@ -530,7 +574,6 @@ function buildMap(){
     if(region){
       path.style.cursor='pointer';
       path.addEventListener('click',()=>{
-        // Toggle: clicking the already-selected region resets to All
         const cur=document.getElementById('countyFilter').value;
         setFilter(cur===region?'All':region);
       });
@@ -554,10 +597,11 @@ function buildMap(){
 function buildSelect(){
   const sel=document.getElementById('countyFilter');
   const a=document.createElement('option');a.value='All';a.textContent='All Regions — Statewide';sel.appendChild(a);
-  // Alphabetical order
-  const regions=[...new Set(DATA.map(e=>e.r))].sort((a,b)=>a.localeCompare(b));
-  regions.forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;sel.appendChild(o);});
+  [...new Set(DATA.map(e=>e.r))].sort((a,b)=>a.localeCompare(b)).forEach(r=>{
+    const o=document.createElement('option');o.value=r;o.textContent=r;sel.appendChild(o);
+  });
   sel.addEventListener('change',()=>setFilter(sel.value));
+  document.getElementById('statusFilter').addEventListener('change',()=>setFilter(undefined));
 }
  
 // ── INIT ──
@@ -566,7 +610,7 @@ renderStats(DATA);
 renderMsHeader();
 renderTimeline();
 buildSelect();
-renderTable('All');
+renderTable('All','All');
 </script>
 </body>
 </html>
