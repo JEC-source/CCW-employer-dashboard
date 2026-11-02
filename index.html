@@ -329,7 +329,10 @@ footer a { color: #3a8fa0; text-decoration: none; }
         </button>
         <div id="rht-legend" style="display:none;align-items:center;gap:16px;flex-wrap:wrap;">
           <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#607d8b;">
-            <div style="width:13px;height:13px;border-radius:3px;background:#3a8fa0;flex-shrink:0;"></div>Has RHT seats
+            <div style="width:13px;height:13px;border-radius:3px;background:#2f9e68;flex-shrink:0;"></div>Has RHT seats
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#607d8b;">
+            <div style="width:13px;height:13px;border-radius:3px;background:#d4dfe5;flex-shrink:0;"></div>No seats recorded yet
           </div>
         </div>
       </div>
@@ -532,9 +535,10 @@ function rhtLabelFor(region) {
 }
 
 function rhtFill(region) {
-  // one shade for any number of seats; TBD and unrecorded keep the default fill
+  // green where seats are actually recorded; everything else is muted so the
+  // map can't be misread as "all counties have RHT seats"
   const r = REGION_RHT[region];
-  return (r && r.seats > 0) ? '#3a8fa0' : '';
+  return (r && r.seats > 0) ? '#2f9e68' : '#d4dfe5';
 }
 
 function paintMap() {
@@ -557,7 +561,7 @@ function toggleRhtLayer() {
     document.getElementById('duo-legend').style.display = 'none';
   }
   const btn = document.getElementById('rht-toggle');
-  btn.style.background = rhtLayerOn ? '#3a8fa0' : '#1e3a4c';
+  btn.style.background = rhtLayerOn ? '#2f9e68' : '#1e3a4c';
   btn.innerHTML = (rhtLayerOn ? '\u25C9 Hide' : '\u25C9 Show') + ' RHT Seats Layer';
   document.getElementById('rht-legend').style.display = rhtLayerOn ? 'flex' : 'none';
   paintMap();
